@@ -24,7 +24,7 @@ namespace PasswordCracker
             {
                 byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
-
+                
                 // Convert the byte array to hexadecimal string
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < hashBytes.Length; i++)
@@ -38,14 +38,31 @@ namespace PasswordCracker
         static void Main(string[] args)
         {
             string[] hashedPasswords = File.ReadAllLines("passwords_hashed.txt");
-
+            IDictionary<string, string> Words = new Dictionary<string, string>();
             Console.WriteLine("MD5 Password Cracker v1.0");
-            
+            int a = 0;
+            var alphabet = "abcdefghijklmnopqrstuvwxyz";
+            var q = alphabet.Select(x => x.ToString());
+            int k = 5;
+            string result;
+            for (int i = 0; i < k - 1; i++)
+            {
+                q = q.SelectMany(x => alphabet, (x, y) => x + y);
+            }
+            foreach (var item in q)
+            {
+                Words.Add(md5(item), item);
+            }
             foreach (var pass in hashedPasswords)
             {
-                Console.WriteLine(pass);
+                if(Words.TryGetValue(pass, out result))
+                {
+                    hashedPasswords[a] = result;
+                    Console.WriteLine(result);
+                    a++;
+                }
             }
-
+            
             // Use this method to test if you managed to correctly crack all the passwords
             // Note that hashedPasswords will need to be swapped out with an array the exact
             // same length that contains all the cracked passwords
